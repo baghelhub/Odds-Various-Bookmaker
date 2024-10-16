@@ -17,4 +17,6 @@ The Advanced Odds Comparison Plugin allows WordPress users to fetch and display 
 
 1. **Download the Plugin**: Clone or download the repository.
    ```bash
-   git clone https://github.com/yourusername/advanced-odds-comparison.git
+   git clone https://github.com/krishan1991/odds_conversion.git
+
+2. **Block Name - Odds Comparison Block for page and posts.

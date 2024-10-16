@@ -14,8 +14,8 @@ class AOC_Odds_Fetcher {
         // Example of fetching odds (replace with actual logic)
         $bookmakers = get_option('odds_bookmakers', true);
 
-        // $odds = get_transient('odds_data_html');
-        // if ($odds == false) {
+        $odds = get_transient('odds_data_html');
+        if ($odds == false) {
 
         
             $odds = '';
@@ -71,7 +71,7 @@ class AOC_Odds_Fetcher {
                 $odds .= '<hr>';
             }
             set_transient('odds_data_html', $odds, 86400);
-        //}
+        }
         ob_get_contents();
         ob_clean();
         wp_send_json_success($odds);
