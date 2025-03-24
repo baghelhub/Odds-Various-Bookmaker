@@ -1,6 +1,6 @@
 <?php
 
-// Class for managing admin dashboard settings related to odds
+
 class Odds_AdminDash {
 
     // API URL for fetching bookmakers data
