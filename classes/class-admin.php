@@ -1,53 +1,52 @@
 <?php
 
- class Odds_AdminDash {
+// Class for managing admin dashboard settings related to odds
+class Odds_AdminDash {
 
-     /*-------  API url and api key  ----------*/ 
-     public  $url = "https://api.the-odds-api.com/v4/sports/?apiKey=19c61225594292a513c4e45908a9f5d6";
+    // API URL for fetching bookmakers data
+    public $url = "https://api.the-odds-api.com/v4/sports/?apiKey=19c61225594292a513c4e45908a9f5d6";
 
-       
+    // Constructor to initialize WordPress hooks
     public function __construct() {
-
-          add_action('admin_menu', [$this, 'add_admin_menu']);
-          add_action('admin_init', [$this, 'settings_init']);
-          add_action('init', [$this, 'save_bookmakers_option_init']);
+        add_action('admin_menu', [$this, 'add_admin_menu']); // Adds an admin menu page
+        add_action('admin_init', [$this, 'settings_init']); // Initializes settings
+        add_action('init', [$this, 'save_bookmakers_option_init']); // Fetches and saves bookmakers data
     }
 
-    function save_bookmakers_option_init(){
-
+    // Function to fetch and save bookmakers data in WordPress options
+    function save_bookmakers_option_init() {
         $saved_bookmakers = get_option('odds_bookmakers');
         $count = 0;
         $bookmakers_data = array();
         $group = array();
-        if ($saved_bookmakers === false) {
 
+        // If bookmakers data is not already saved, fetch from API
+        if ($saved_bookmakers === false) {
             $response = wp_remote_get($this->url);
             
+            // Check for API errors
             if (is_wp_error($response)) {
                 return 'Error: ' . $response->get_error_message();
             }
 
             $data = json_decode(wp_remote_retrieve_body($response), true);
 
+            // Process and store up to 10 unique bookmakers
             foreach ($data as $key => $data) {
-                
-                if($count <= 10 ){
-                    
-                    if(in_array($data['key'], $group) ){
+                if ($count <= 10) {
+                    if (in_array($data['key'], $group)) {
                         continue;
                     }
                     $bookmakers_data[] = $data;
                     $group[] = $data['key'];
                 }
-                
-
                 $count++;
             }
             update_option('odds_bookmakers', $bookmakers_data);
-
         }
     }
 
+    // Function to add a custom menu page in the WordPress admin panel
     public function add_admin_menu() {
         add_menu_page(
             'Odds Settings',
@@ -59,19 +58,22 @@
         );
     }
 
+    // Function to register settings and add fields to the settings page
     public function settings_init() {
         register_setting('oddsSettings', 'aoc_bookmakers');
         register_setting('oddsSettings', 'aoc_markets');
         register_setting('oddsSettings', 'aoc_links');
 
-     add_settings_section(
+        // Add a settings section
+        add_settings_section(
             'aoc_settings_section',
             __('Bookmakers and Markets', 'advanced-odds-comparison'),
-             null,
+            null,
             'odds_settings'
         );
 
-     add_settings_field(
+        // Add settings fields
+        add_settings_field(
             'aoc_bookmakers',
             __('Bookmakers', 'advanced-odds-comparison'),
             [$this, 'bookmakers_render'],
@@ -79,10 +81,7 @@
             'aoc_settings_section'
         );
 
-
-
-
-     add_settings_field(
+        add_settings_field(
             'aoc_markets',
             __('Markets', 'advanced-odds-comparison'),
             [$this, 'markets_render'],
@@ -91,8 +90,7 @@
         );
     }
 
-
-
+    // Function to render the settings page
     public function settings_page() {
         ?>
         <div class="wrap">
@@ -108,33 +106,26 @@
         <?php
     }
 
+    // Function to render bookmaker checkboxes
     public function bookmakers_render() {
-        
-          $options = get_option('aoc_bookmakers', []);
-         // Example options, replace with actual bookmakers
-          $bookmakers = get_option('odds_bookmakers', true);
+        $options = get_option('aoc_bookmakers', []);
+        $bookmakers = get_option('odds_bookmakers', true);
         
         foreach ($bookmakers as $bookmaker) {
-
-             echo '<label>
+            echo '<label>
              <input type="checkbox" name="aoc_bookmakers[]" value="' . esc_attr($bookmaker['key']) . '" ' . 
              (is_array($options) && in_array($bookmaker['key'], $options) ? 'checked' : '') . '> ' . 
              esc_html($bookmaker['title']) . 
             '</label><br>';
-
-            // echo '<label><input type="checkbox" name="aoc_bookmakers[]" value="' . esc_attr($bookmaker['key']) . '"' . (in_array($bookmaker['key'], $options) ? ' checked' : '') . '> ' . esc_html($bookmaker['title']) . '</label><br>';
-          
         }
-      
     }
 
+    // Function to render market checkboxes
     public function markets_render() {
         $options = get_option('aoc_markets', []);
-        // Example options, replace with actual markets
-        $markets = array('h2h', 'spreads', 'totals');
+        $markets = array('h2h', 'spreads', 'totals'); // Example markets
 
         foreach ($markets as $market) {
-            // echo '<label><input type="checkbox" name="aoc_markets[]" value="' . esc_attr($market) . '"' . (in_array($market, $options) ? ' checked' : '') . '> ' . esc_html($market) . '</label><br>';
             echo '<label>
             <input type="checkbox" name="aoc_markets[]" value="' . esc_attr($market) . '" ' . 
             (is_array($options) && in_array($market, $options) ? 'checked' : '') . '> ' . 
@@ -142,6 +133,7 @@
         }
     }
 
+    // Function to render a textarea for links
     public function links_render() {
         $links = get_option('aoc_links', '');
         echo '<textarea name="aoc_links" rows="5" cols="50">' . esc_textarea($links) . '</textarea>';
