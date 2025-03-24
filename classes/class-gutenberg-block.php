@@ -1,11 +1,15 @@
 <?php
 
-class AOC_Gutenberg_Block {
+
+class Odds_Gutenberg_Widget {
+
+  
     public function __construct() {
-        add_action('init', [$this, 'register_block']);
-        add_action('enqueue_block_editor_assets', [$this, 'enqueue_block_assets']);
-        //add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
-    }
+
+          add_action('init', [$this, 'register_block']);
+          add_action('enqueue_block_editor_assets', [$this, 'enqueue_block_assets']);
+         //add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
+      }
 
     public function register_block() {
         register_block_type('odds-comparison/api-data-block', [
@@ -16,10 +20,9 @@ class AOC_Gutenberg_Block {
 
     public function enqueue_block_assets() {
         wp_enqueue_script(
-            'aoc-blocks-js',
-            plugins_url('../assets/block.js', __FILE__),
+            'aoc-blocks-js', plugins_url('../access/js/gutunberg-block.js', __FILE__),
             ['wp-blocks', 'wp-element', 'wp-editor'],
-            filemtime(plugin_dir_path(__FILE__) . '../assets/block.js')
+            filemtime(plugin_dir_path(__FILE__) . '../access/js/gutunberg-block.js')
         );
         $bookmakers = get_option('odds_bookmakers', true);
         $bookmarkers_js = array();
@@ -33,7 +36,7 @@ class AOC_Gutenberg_Block {
     }
 
     public function enqueue_frontend_assets() {
-        wp_enqueue_style('aoc-blocks-css', plugins_url('../assets/block.css', __FILE__));
+        wp_enqueue_style('aoc-blocks-css', plugins_url('../access/css/block.css', __FILE__));
     }
 
     public function render_block($attributes) {
@@ -51,13 +54,9 @@ class AOC_Gutenberg_Block {
                     .then(data => {
                         const oddsData = document.getElementById('odds-data');
                         if (data.success) {
-                            //data.data.forEach(odds => {
                                 const div = document.createElement('div');
-                                //console.log('jgjhj', data.data);
-                                //div.innerHTML = `${data.data}`;
                                 const oddsDataDiv = document.getElementById('odds-data');
                                 oddsDataDiv.innerHTML = data.data;
-                            //});
                         }
                     });
             });

@@ -1,14 +1,16 @@
 <?php
 
-class AOC_Odds_Fetcher {
 
-    public $apiKey = 'e577318e8f3b183699f40816408ca6a6';
 
-    public function __construct() {
+class Odds_DataFetch {
 
-        add_action('wp_ajax_fetch_odds', [$this, 'fetch_odds']);
-        add_action('wp_ajax_nopriv_fetch_odds', [$this, 'fetch_odds']);
-    }
+    public $apiKey = '19c61225594292a513c4e45908a9f5d6';
+
+       public function __construct() {
+
+          add_action('wp_ajax_fetch_odds', [$this, 'fetch_odds']);
+          add_action('wp_ajax_nopriv_fetch_odds', [$this, 'fetch_odds']);
+      }
 
     public function fetch_odds() {
         // Example of fetching odds (replace with actual logic)
@@ -66,12 +68,12 @@ class AOC_Odds_Fetcher {
                         }
 
                         $g_count++;
+                         }
                     }
-                }
-                $odds .= '<hr>';
-            }
-            set_transient('odds_data_html', $odds, 86400);
-        }
+                   $odds .= '<hr>';
+                  }
+                set_transient('odds_data_html', $odds, 86400);
+           }
         ob_get_contents();
         ob_clean();
         wp_send_json_success($odds);

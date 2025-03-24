@@ -1,15 +1,16 @@
 <?php
 
-class AOC_Admin {
+ class Odds_AdminDash {
 
-    public $apiKey = 'e577318e8f3b183699f40816408ca6a6';
-    public $url = 'https://api.the-odds-api.com/v4/sports?apiKey=e577318e8f3b183699f40816408ca6a6';
+     /*-------  API url and api key  ----------*/ 
+     public  $url = "https://api.the-odds-api.com/v4/sports/?apiKey=19c61225594292a513c4e45908a9f5d6";
 
+       
     public function __construct() {
 
-        add_action('admin_menu', [$this, 'add_admin_menu']);
-        add_action('admin_init', [$this, 'settings_init']);
-        add_action('init', [$this, 'save_bookmakers_option_init']);
+          add_action('admin_menu', [$this, 'add_admin_menu']);
+          add_action('admin_init', [$this, 'settings_init']);
+          add_action('init', [$this, 'save_bookmakers_option_init']);
     }
 
     function save_bookmakers_option_init(){
@@ -27,6 +28,7 @@ class AOC_Admin {
             }
 
             $data = json_decode(wp_remote_retrieve_body($response), true);
+
             foreach ($data as $key => $data) {
                 
                 if($count <= 10 ){
@@ -51,9 +53,9 @@ class AOC_Admin {
             'Odds Settings',
             'Odds Settings',
             'manage_options',
-            'odds_settings',
+            'dds_various_bookmakers',
             [$this, 'settings_page'],
-            'dashicons-chart-line'
+            'dashicons-yes-alt'
         );
     }
 
@@ -62,14 +64,14 @@ class AOC_Admin {
         register_setting('oddsSettings', 'aoc_markets');
         register_setting('oddsSettings', 'aoc_links');
 
-        add_settings_section(
+     add_settings_section(
             'aoc_settings_section',
-            __('Select Bookmakers and Markets', 'advanced-odds-comparison'),
-            null,
+            __('Bookmakers and Markets', 'advanced-odds-comparison'),
+             null,
             'odds_settings'
         );
 
-        add_settings_field(
+     add_settings_field(
             'aoc_bookmakers',
             __('Bookmakers', 'advanced-odds-comparison'),
             [$this, 'bookmakers_render'],
@@ -77,27 +79,24 @@ class AOC_Admin {
             'aoc_settings_section'
         );
 
-        add_settings_field(
+
+
+
+     add_settings_field(
             'aoc_markets',
             __('Markets', 'advanced-odds-comparison'),
             [$this, 'markets_render'],
             'odds_settings',
             'aoc_settings_section'
         );
-
-        // add_settings_field(
-        //     'aoc_links',
-        //     __('Bookmaker Links', 'advanced-odds-comparison'),
-        //     [$this, 'links_render'],
-        //     'odds_settings',
-        //     'aoc_settings_section'
-        // );
     }
+
+
 
     public function settings_page() {
         ?>
         <div class="wrap">
-            <h1>Odds Settings</h1>
+            <h1>Multiple Mark Odds Setting</h1>
             <form action="options.php" method="post">
                 <?php
                 settings_fields('oddsSettings');
@@ -110,13 +109,23 @@ class AOC_Admin {
     }
 
     public function bookmakers_render() {
-        $options = get_option('aoc_bookmakers', []);
-        // Example options, replace with actual bookmakers
-        $bookmakers = get_option('odds_bookmakers', true);
+        
+          $options = get_option('aoc_bookmakers', []);
+         // Example options, replace with actual bookmakers
+          $bookmakers = get_option('odds_bookmakers', true);
         
         foreach ($bookmakers as $bookmaker) {
-            echo '<label><input type="checkbox" name="aoc_bookmakers[]" value="' . esc_attr($bookmaker['key']) . '"' . (in_array($bookmaker['key'], $options) ? ' checked' : '') . '> ' . esc_html($bookmaker['title']) . '</label><br>';
+
+             echo '<label>
+             <input type="checkbox" name="aoc_bookmakers[]" value="' . esc_attr($bookmaker['key']) . '" ' . 
+             (is_array($options) && in_array($bookmaker['key'], $options) ? 'checked' : '') . '> ' . 
+             esc_html($bookmaker['title']) . 
+            '</label><br>';
+
+            // echo '<label><input type="checkbox" name="aoc_bookmakers[]" value="' . esc_attr($bookmaker['key']) . '"' . (in_array($bookmaker['key'], $options) ? ' checked' : '') . '> ' . esc_html($bookmaker['title']) . '</label><br>';
+          
         }
+      
     }
 
     public function markets_render() {
@@ -125,7 +134,11 @@ class AOC_Admin {
         $markets = array('h2h', 'spreads', 'totals');
 
         foreach ($markets as $market) {
-            echo '<label><input type="checkbox" name="aoc_markets[]" value="' . esc_attr($market) . '"' . (in_array($market, $options) ? ' checked' : '') . '> ' . esc_html($market) . '</label><br>';
+            // echo '<label><input type="checkbox" name="aoc_markets[]" value="' . esc_attr($market) . '"' . (in_array($market, $options) ? ' checked' : '') . '> ' . esc_html($market) . '</label><br>';
+            echo '<label>
+            <input type="checkbox" name="aoc_markets[]" value="' . esc_attr($market) . '" ' . 
+            (is_array($options) && in_array($market, $options) ? 'checked' : '') . '> ' . 
+            esc_html($market) .'</label><br>';
         }
     }
 
