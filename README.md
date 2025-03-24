@@ -20,7 +20,7 @@ The **Odds Various Bookmaker Plugin** allows WordPress users to fetch and displa
 1. **Download the Plugin**  
    Clone or download the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/baghelhub/Odds-Various-Bookmaker/blob/master/
    ```
 
 
